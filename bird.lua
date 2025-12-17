@@ -1,19 +1,30 @@
 local Bird = {}
 Bird.__index = Bird
 
+local birdImage
+
 function Bird:new()
     local this = {}
     setmetatable(this, Bird)
 
-    this.width = 30
-    this.height = 30
+    if not birdImage then
+        birdImage = love.graphics.newImage('assets/skins/default.png')
+    end
+
+    -- Target world size
+    this.width = 60
+    this.height = 60
+
+    -- Calculate scale factors
+    this.scale_x = this.width / birdImage:getWidth()
+    this.scale_y = this.height / birdImage:getHeight()
 
     this.x = VIRTUAL_WIDTH / 2 - this.width / 2
     this.y = VIRTUAL_HEIGHT / 2 - this.height / 2
 
     this.dy = 0
-    this.gravity = 1000       -- Much stronger gravity
-    this.jump_strength = -350 -- Stronger jump to counteract gravity
+    this.gravity = 1500       -- Stronger gravity for taller world
+    this.jump_strength = -500 -- Stronger jump
 
     return this
 end
@@ -28,9 +39,8 @@ function Bird:jump()
 end
 
 function Bird:render()
-    love.graphics.setColor(1, 1, 0) -- Yellow
-    love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
-    love.graphics.setColor(1, 1, 1) -- Reset
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.draw(birdImage, self.x, self.y, 0, self.scale_x, self.scale_y)
 end
 
 setmetatable(Bird, { __call = function(_) return Bird:new() end })
